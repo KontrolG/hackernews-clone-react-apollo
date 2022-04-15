@@ -8,6 +8,7 @@ import {
 } from "@apollo/client";
 import LinksList from "./LinksList";
 import { ErrorBoundary } from "react-error-boundary";
+import CreateLink from "./CreateLink";
 
 const httpLink = new HttpLink({
   uri: "http://localhost:4000/graphql"
@@ -33,6 +34,7 @@ function App() {
       }}
     >
       <ApolloProvider client={apolloClient}>
+        <CreateLink />
         <LinksList />
       </ApolloProvider>
     </ErrorBoundary>
