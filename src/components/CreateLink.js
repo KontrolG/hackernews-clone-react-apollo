@@ -1,6 +1,7 @@
 import { gql, useMutation } from "@apollo/client";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FEED_LINKS_QUERY } from "./LinksList";
 
 const CREATE_LINK_MUTATION = gql`
   mutation PostMutation($description: String!, $url: String!) {
@@ -9,6 +10,16 @@ const CREATE_LINK_MUTATION = gql`
       createdAt
       url
       description
+      postedBy {
+        id
+        name
+      }
+      votes {
+        id
+        user {
+          id
+        }
+      }
     }
   }
 `;
@@ -23,6 +34,21 @@ function CreateLink() {
     variables: formState,
     onCompleted() {
       navigate("/");
+    },
+    update(cache, { data: { post: newLink } }) {
+      const cacheData = cache.readQuery({ query: FEED_LINKS_QUERY });
+
+      const updateLinks = [...cacheData?.feed?.links, newLink];
+
+      cache.writeQuery({
+        query: FEED_LINKS_QUERY,
+        data: {
+          feed: {
+            ...cacheData?.feed,
+            links: updateLinks
+          }
+        }
+      });
     }
   });
 
